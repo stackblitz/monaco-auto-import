@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outDir": "lib",
+    "module": "commonjs",
+    "target": "es3",
+    "lib": ["es6", "dom"],
+    "inlineSourceMap": true,
+    "jsx": "react",
+    "declaration": true,
+    "moduleResolution": "node",
+    "rootDir": ".",
+    "forceConsistentCasingInFileNames": true,
+    "types": ["jest"]
+  }
+}
