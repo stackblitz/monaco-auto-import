@@ -5,9 +5,8 @@
   "description": "",
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
-    "_build": "nwb build-react-component",
-    "clean": "nwb clean-module && nwb clean-demo",
-    "start": "nwb serve-react-demo",
+    "clean": "",
+    "start": "parcel serve ./demo/index.html --open",
     "release": "yarn test && yarn clean && yarn build && yarn publish && yarn clean",
     "test": "jest --verbose",
     "test:coverage": "jest --coverage",
@@ -21,7 +20,6 @@
     "enzyme-adapter-react-16": "^1.1.1",
     "jest": "^22.4.3",
     "monaco-editor": "^0.13.1",
-    "nwb": "0.21.x",
     "ts-jest": "^22.4.2",
     "ts-loader": "^3.5.0",
     "typescript": "^2.8.1"
