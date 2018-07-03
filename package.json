@@ -24,6 +24,9 @@
     "ts-loader": "^3.5.0",
     "typescript": "^2.8.1"
   },
+  "browserslist": [
+    "last 3 versions"
+  ],
   "jest": {
     "setupTestFrameworkScriptFile": "./scripts/test.js",
     "moduleFileExtensions": [

@@ -1,1 +1,3 @@
-console.log(1)
+export { ImportObject } from './import-db'
+
+export { default } from './auto-import'

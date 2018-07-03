@@ -1,4 +1,7 @@
-import * as Monaco from 'monaco-editor/esm/vs/editor/editor.api.d'
+import * as Monaco from 'monaco-editor'
+
+import AutoImport from '../src/auto-import'
+import { source } from './mock-data'
 
 const global = window as Window & {
   require: any
@@ -7,14 +10,20 @@ const global = window as Window & {
 
 const { require: $require } = global
 
-$require.config({ paths: { vs: 'https://unpkg.com/monaco-editor/dev/vs' } })
+// Set base path
+$require.config({
+  paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor/dev/vs' }
+})
 
-// let editor
 $require(['vs/editor/editor.main'], () => {
   const { monaco } = global
 
   const editor = monaco.editor.create(document.getElementById('demo'), {
-    value: 'ul#nav>li.item$*4>a{Item $}',
+    value: source,
     language: 'typescript'
   })
+
+  const completor = new AutoImport(monaco, editor)
+
+  completor.imports.saveImport('./src/a.ts', 'Test')
 })
