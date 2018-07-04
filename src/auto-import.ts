@@ -18,10 +18,9 @@ class AutoImport {
   }
 
   public attachCommands() {
-    monaco.languages.registerCompletionItemProvider(
-      'typescript',
-      new ImportCompletion(this.imports)
-    )
+    const completor = new ImportCompletion(this.editor, this.imports)
+
+    monaco.languages.registerCompletionItemProvider('typescript', completor)
   }
 }
 

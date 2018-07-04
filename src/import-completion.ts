@@ -2,17 +2,33 @@ import * as Monaco from 'monaco-editor'
 
 import { monaco } from './auto-import'
 import ImportDb, { ImportObject } from './import-db'
+import { ImportFixer } from './import-fixer'
 
 class ImportCompletion implements Monaco.languages.CompletionItemProvider {
-  constructor(private importDb: ImportDb) {}
+  constructor(
+    private editor: Monaco.editor.IStandaloneCodeEditor,
+    private importDb: ImportDb
+  ) {
+    const cs = (editor as any)._commandService
+    cs.addCommand({
+      id: 'resolveImport',
+      handler: (_, ...args) => this.handleCommand.call(this, ...args)
+    })
+  }
 
-  public async provideCompletionItems(
+  public handleCommand(imp: ImportObject, document: Monaco.editor.ITextModel) {
+    new ImportFixer(this.editor).fix(document, [imp])
+  }
+
+  public provideCompletionItems(
     document: Monaco.editor.ITextModel,
     position: Monaco.Position
   ) {
-    let wordToComplete = document.getWordAtPosition(position).word.toLowerCase()
+    const wordToComplete = document
+      .getWordAtPosition(position)
+      .word.toLowerCase()
 
-    let matcher = f => f.name.toLowerCase().indexOf(wordToComplete) > -1
+    const matcher = f => f.name.toLowerCase().indexOf(wordToComplete) > -1
     const found = this.importDb.all().filter(matcher)
 
     return found.map(i => this.buildCompletionItem(i, document))
@@ -21,7 +37,7 @@ class ImportCompletion implements Monaco.languages.CompletionItemProvider {
   private buildCompletionItem(
     imp: ImportObject,
     document: Monaco.editor.ITextModel
-  ): any {
+  ): Monaco.languages.CompletionItem {
     const path = this.createDescription(imp)
 
     return {
@@ -31,8 +47,8 @@ class ImportCompletion implements Monaco.languages.CompletionItemProvider {
       documentation: `[AI]  Import ${imp.name} from ${path}`,
       command: {
         title: 'AI: Autocomplete',
-        command: 'extension.resolveImport',
-        arguments: [{ imp, document }]
+        id: 'resolveImport',
+        arguments: [imp, document]
       }
     }
   }
