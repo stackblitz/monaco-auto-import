@@ -23,7 +23,11 @@ $require(['vs/editor/editor.main'], () => {
     language: 'typescript'
   })
 
-  const completor = new AutoImport(monaco, editor)
+  const completor = new AutoImport({ monaco, editor })
 
+  completor.imports.saveImport('./node_modules/a.ts', 'NM')
   completor.imports.saveImport('./src/a.ts', 'Test')
+  completor.imports.saveImport('./src/index.ts', 'Index')
+  ;(window as any).monaco = monaco
+  ;(window as any).editor = editor
 })

@@ -11,7 +11,6 @@ export class ImportFixer {
     this.useSemiColon = false
     this.spacesBetweenBraces = true
     this.doubleQuotes = false
-    console.log('good')
   }
 
   public fix(
@@ -19,6 +18,7 @@ export class ImportFixer {
     imports: ImportObject[]
   ): void {
     const edits = this.getTextEdits(document, imports)
+    console.warn(edits)
     this.editor.executeEdits('', edits)
     // this.editor.get
   }
@@ -41,25 +41,18 @@ export class ImportFixer {
       return edits
     }
 
-    if (this.shouldMergeImport(document, relativePath)) {
-      edits.push({
-        range: new Monaco.Range(0, 0, document.getLineCount(), 0),
-        text: this.mergeImports(document, importName, importObj, relativePath)
-      })
-    } else {
-      console.log('oh no')
-      // edits.push({
-      //   range: new Monaco.Position(0, 0),
-      //   text: this.mergeImports(document, importName, importObj, relativePath)
-      // })
-      // edits.insert(
-      //   document.uri,
-      //   new Monaco.Position(0, 0),
-      //   this.createImportStatement(imports[0].name, relativePath, true)
-      // )
-    }
+    // if (this.shouldMergeImport(document, relativePath)) {
+    //   edits.push({
+    //     range: new Monaco.Range(0, 0, document.getLineCount(), 0),
+    //     text: this.mergeImports(document, importName, importObj, relativePath)
+    //   })
+    // } else {
+    edits.push({
+      range: new Monaco.Range(0, 0, 0, 0),
+      text: this.createImportStatement(imports[0].name, relativePath, true)
+    })
+    // }
 
-    console.log(edits)
     return edits
   }
 
@@ -175,22 +168,21 @@ export class ImportFixer {
   }
 
   private getRelativePath(document, importObj: Monaco.Uri | any): string {
-    console.log(importObj)
+    return importObj
     // return importObj.discovered
     //   ? importObj.fsPath
     //   : path.relative(path.dirname(document.fileName), importObj.fsPath)
-    return `as`
   }
 
   private normaliseRelativePath(importObj, relativePath: string): string {
-    let removeFileExtenion = rp => {
+    const removeFileExtenion = rp => {
       if (rp) {
         rp = rp.substring(0, rp.lastIndexOf('.'))
       }
       return rp
     }
 
-    let makeRelativePath = rp => {
+    const makeRelativePath = rp => {
       let preAppend = './'
 
       if (!rp.startsWith(preAppend)) {
@@ -205,10 +197,8 @@ export class ImportFixer {
       return rp
     }
 
-    if (importObj.discovered === undefined) {
-      relativePath = makeRelativePath(relativePath)
-      relativePath = removeFileExtenion(relativePath)
-    }
+    relativePath = makeRelativePath(relativePath)
+    relativePath = removeFileExtenion(relativePath)
 
     return relativePath
   }
