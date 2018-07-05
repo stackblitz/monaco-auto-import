@@ -1,7 +1,7 @@
 import * as Monaco from 'monaco-editor'
 
 import AutoImport from '../src/auto-import'
-import { source } from './mock-data'
+import { files, source } from './mock-data'
 
 const global = window as Window & {
   require: any
@@ -20,14 +20,12 @@ $require(['vs/editor/editor.main'], () => {
 
   const editor = monaco.editor.create(document.getElementById('demo'), {
     value: source,
-    language: 'typescript'
+    language: 'javascript'
   })
 
   const completor = new AutoImport({ monaco, editor })
 
-  completor.imports.saveImport('./node_modules/a.ts', 'NM')
-  completor.imports.saveImport('./src/a.ts', 'Test')
-  completor.imports.saveImport('./src/index.ts', 'Index')
+  completor.imports.saveFiles(files)
   ;(window as any).monaco = monaco
   ;(window as any).editor = editor
 })

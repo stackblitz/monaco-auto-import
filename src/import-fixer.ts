@@ -13,24 +13,18 @@ export class ImportFixer {
     this.doubleQuotes = false
   }
 
-  public fix(
-    document: Monaco.editor.ITextModel,
-    imports: ImportObject[]
-  ): void {
-    const edits = this.getTextEdits(document, imports)
+  public fix(document: Monaco.editor.ITextModel, imp: ImportObject): void {
+    const edits = this.getTextEdits(document, imp)
     console.warn(edits)
     this.editor.executeEdits('', edits)
     // this.editor.get
   }
 
-  public getTextEdits(
-    document: Monaco.editor.ITextModel,
-    imports: ImportObject[]
-  ) {
+  public getTextEdits(document: Monaco.editor.ITextModel, imp: ImportObject) {
     const edits = new Array<Monaco.editor.IIdentifiedSingleEditOperation>()
 
-    const importObj: Monaco.Uri | any = imports[0].file
-    const importName: string = imports[0].name
+    const importObj: Monaco.Uri | any = imp.file.path
+    const importName: string = imp.name
 
     let relativePath = this.normaliseRelativePath(
       importObj,
@@ -49,7 +43,7 @@ export class ImportFixer {
     // } else {
     edits.push({
       range: new Monaco.Range(0, 0, 0, 0),
-      text: this.createImportStatement(imports[0].name, relativePath, true)
+      text: this.createImportStatement(imp.name, relativePath, true)
     })
     // }
 

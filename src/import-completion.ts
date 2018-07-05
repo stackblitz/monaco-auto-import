@@ -17,19 +17,21 @@ class ImportCompletion implements Monaco.languages.CompletionItemProvider {
   }
 
   public handleCommand(imp: ImportObject, document: Monaco.editor.ITextModel) {
-    new ImportFixer(this.editor).fix(document, [imp])
+    new ImportFixer(this.editor).fix(document, imp)
   }
 
   public provideCompletionItems(
     document: Monaco.editor.ITextModel,
     position: Monaco.Position
   ) {
-    const wordToComplete = document
-      .getWordAtPosition(position)
-      .word.toLowerCase()
+    const wordToComplete = document.getWordAtPosition(position).word
 
-    const matcher = f => f.name.toLowerCase().indexOf(wordToComplete) > -1
-    const found = this.importDb.all().filter(matcher)
+    const matcher = f =>
+      f.imports.findIndex(
+        imp => imp.toLowerCase() === wordToComplete.toLowerCase()
+      ) > -1
+
+    const found = this.importDb.getImports(wordToComplete, matcher)
 
     return found.map(i => this.buildCompletionItem(i, document))
   }
@@ -54,7 +56,7 @@ class ImportCompletion implements Monaco.languages.CompletionItemProvider {
   }
 
   private createDescription(imp: ImportObject) {
-    return imp.file
+    return imp.file.path
   }
 }
 
