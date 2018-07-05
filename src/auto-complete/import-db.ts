@@ -28,7 +28,7 @@ const isAnImport = (name: string | ImportMatcher, file: File) => {
 }
 
 class ImportDb {
-  private files = new Array<File>()
+  public files = new Array<File>()
 
   /**
    * Returns the total amount of files in the store
@@ -38,10 +38,21 @@ class ImportDb {
   }
 
   /**
-   * Returns all the files in the store
+   * Returns all the imports from the store
    */
   public all() {
-    return this.files
+    const imports = new Array<ImportObject>()
+
+    this.files.forEach(file => {
+      file.imports.forEach(imp =>
+        imports.push({
+          ...imp,
+          file
+        })
+      )
+    })
+
+    return imports
   }
 
   /**

@@ -30,4 +30,5 @@ $require(['vs/editor/editor.main'], () => {
   completor.imports.addImport('./src/test.ts', 'ASD')
   ;(window as any).monaco = monaco
   ;(window as any).editor = editor
+  ;(window as any).completor = completor
 })

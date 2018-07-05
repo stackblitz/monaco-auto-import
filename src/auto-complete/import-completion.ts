@@ -1,6 +1,6 @@
 import * as Monaco from 'monaco-editor'
 
-import ImportDb, { File, Import, ImportObject } from './import-db'
+import ImportDb, { ImportObject } from './import-db'
 import { ImportFixer } from './import-fixer'
 import kindResolver from './util/kind-resolution'
 
@@ -29,23 +29,29 @@ class ImportCompletion implements Monaco.languages.CompletionItemProvider {
     new ImportFixer(this.editor).fix(document, imp)
   }
 
-  public provideCompletionItems(
-    document: Monaco.editor.ITextModel,
-    position: Monaco.Position
-  ) {
-    const wordToComplete = document
-      .getWordAtPosition(position)
-      .word.trim()
-      .toLowerCase()
+  public provideCompletionItems(document: Monaco.editor.ITextModel) {
+    const imports = this.importDb.all()
 
-    const importMatcher = (imp: Import) =>
-      imp.name.toLowerCase() === wordToComplete
-    const fileMatcher = (f: File) => f.imports.findIndex(importMatcher) > -1
-
-    const found = this.importDb.getImports(importMatcher, fileMatcher)
-
-    return found.map(i => this.buildCompletionItem(i, document))
+    return imports.map(i => this.buildCompletionItem(i, document))
   }
+
+  // public provideCompletionItems__on_keypress(
+  //   document: Monaco.editor.ITextModel,
+  //   position: Monaco.Position
+  // ) {
+  //   const wordToComplete = document
+  //     .getWordAtPosition(position)
+  //     .word.trim()
+  //     .toLowerCase()
+
+  //   const importMatcher = (imp: Import) =>
+  //     imp.name.toLowerCase() === wordToComplete
+  //   const fileMatcher = (f: File) => f.imports.findIndex(importMatcher) > -1
+
+  //   const found = this.importDb.getImports(importMatcher, fileMatcher)
+
+  //   return found.map(i => this.buildCompletionItem(i, document))
+  // }
 
   private buildCompletionItem(
     imp: ImportObject,

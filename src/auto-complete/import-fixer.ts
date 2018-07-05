@@ -36,7 +36,6 @@ export class ImportFixer {
     if (importResolved) return edits
 
     if (fileResolved) {
-      console.log({ imports })
       edits.push({
         range: new Monaco.Range(0, 0, document.getLineCount(), 0),
         text: this.mergeImports(document, imp, imports[0].path)
