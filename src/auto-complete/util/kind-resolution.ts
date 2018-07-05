@@ -1,7 +1,6 @@
 import { monaco } from '..'
 import { ImportObject } from '../import-db'
 
-
 const kindResolver = (imp: ImportObject) => {
   switch (imp.type) {
     case 'function':
@@ -17,6 +16,7 @@ const kindResolver = (imp: ImportObject) => {
       return monaco.languages.CompletionItemKind.Variable
 
     case 'enum':
+    case 'const enum':
       return monaco.languages.CompletionItemKind.Enum
 
     case 'class':

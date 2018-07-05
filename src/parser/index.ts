@@ -6,5 +6,6 @@ export type Expression =
   | 'let'
   | 'var'
   | 'const'
+  | 'const enum'
   | 'enum'
   | 'type'
