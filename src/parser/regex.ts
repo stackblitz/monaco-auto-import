@@ -1,7 +1,7 @@
 import { Import } from '../auto-complete/import-db'
 import { getMatches } from './util'
 
-const findConstants = /export[ \t\n]+(?:declare[ \t\n]+)?(const +enum|default|class|interface|let|var|const|enum|type|function)[ \t\n]+([^=\n\t (:;<]+)/
+const findConstants = /export[ \t\n]+(?:declare[ \t\n]+)?(const +enum|default|class|interface|let|var|const|enum|type|function)[ \t\n]+([^=\n\t (:;<]+)/g
 const findDynamics = /export +{([^}]+)}/g
 
 const regexTokeniser = (file: string) => {
