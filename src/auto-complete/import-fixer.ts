@@ -1,5 +1,6 @@
 import * as Monaco from 'monaco-editor'
 
+import { getMatches } from './../parser/util'
 import { ImportObject } from './import-db'
 
 export class ImportFixer {
@@ -15,88 +16,77 @@ export class ImportFixer {
 
   public fix(document: Monaco.editor.ITextModel, imp: ImportObject): void {
     const edits = this.getTextEdits(document, imp)
-    console.warn(edits)
     this.editor.executeEdits('', edits)
-    // this.editor.get
   }
 
   public getTextEdits(document: Monaco.editor.ITextModel, imp: ImportObject) {
     const edits = new Array<Monaco.editor.IIdentifiedSingleEditOperation>()
 
-    const { path } = imp.file
-    const { name } = imp
+    // const { path } = imp.file
 
-    const relativePath = this.normaliseRelativePath(
-      path,
-      this.getRelativePath(document, path)
+    // const relativePath = this.normaliseRelativePath(
+    //   path,
+    //   this.getRelativePath(document, path)
+    // )
+
+    const { importResolved, fileResolved, imports } = this.parseResolved(
+      document,
+      imp
     )
+    if (importResolved) return edits
 
-    if (this.alreadyResolved(document, relativePath, name)) {
-      return edits
+    if (fileResolved) {
+      console.log({ imports })
+      edits.push({
+        range: new Monaco.Range(0, 0, document.getLineCount(), 0),
+        text: this.mergeImports(document, imp, imports[0].path)
+      })
+    } else {
+      edits.push({
+        range: new Monaco.Range(0, 0, 0, 0),
+        text: this.createImportStatement(imp, true)
+      })
     }
-
-    // if (this.shouldMergeImport(document, relativePath)) {
-    //   edits.push({
-    //     range: new Monaco.Range(0, 0, document.getLineCount(), 0),
-    //     text: this.mergeImports(document, name, path, relativePath)
-    //   })
-    // } else {
-    edits.push({
-      range: new Monaco.Range(0, 0, 0, 0),
-      text: this.createImportStatement(imp.name, relativePath, true)
-    })
-    // }
 
     return edits
   }
 
-  private alreadyResolved(
-    document: Monaco.editor.ITextModel,
-    relativePath,
-    importName
-  ) {
-    const exp = new RegExp(
-      `(?:import {)(?:.*)(?:} from ')(?:${relativePath})(?:';)`
+  /**
+   * Returns whether a given import has already been
+   * resolved by the user
+   */
+  private parseResolved(document: Monaco.editor.ITextModel, imp: ImportObject) {
+    const exp = /(?:import[ \t]+{)(.*)}[ \t]from[ \t]['"](.*)['"]/g
+    const currentDoc = document.getValue()
+
+    const matches = getMatches(currentDoc, exp)
+    const parsed = matches.map(([_, names, path]) => ({
+      names: names.split(',').map(imp => imp.trim().replace(/\n/g, '')),
+      path
+    }))
+    const imports = parsed.filter(
+      ({ path }) =>
+        path === imp.file.path || imp.file.aliases.indexOf(path) > -1
     )
 
-    const currentDoc = document.getValue()
-    const foundImport = currentDoc.match(exp)
+    const importResolved =
+      imports.findIndex(i => i.names.indexOf(imp.name) > -1) > -1
 
-    if (
-      foundImport &&
-      foundImport.length > 0 &&
-      foundImport[0].indexOf(importName) > -1
-    ) {
-      return true
-    }
-
-    return false
+    return { imports, importResolved, fileResolved: !!imports.length }
   }
 
-  private shouldMergeImport(
-    document: Monaco.editor.ITextModel,
-    relativePath
-  ): boolean {
-    const currentDoc = document.getValue()
-
-    const isCommentLine = (text: string): boolean => {
-      let firstTwoLetters = text.trim().substr(0, 2)
-      return firstTwoLetters === '//' || firstTwoLetters === '/*'
-    }
-
-    return currentDoc.indexOf(relativePath) !== -1 && !isCommentLine(currentDoc)
-  }
-
+  /**
+   * Merges an import statement into the document
+   */
   private mergeImports(
     document: Monaco.editor.ITextModel,
-    name,
-    file,
-    relativePath: string
+    imp: ImportObject,
+    path: string
   ) {
     const exp =
       this.useSemiColon === true
-        ? new RegExp(`(?:import {)(?:.*)(?:} from ')(?:${relativePath})(?:';)`)
-        : new RegExp(`(?:import {)(?:.*)(?:} from ')(?:${relativePath})(?:')`)
+        ? new RegExp(`(?:import {)(?:.*)(?:} from ')(?:${path})(?:';)`)
+        : new RegExp(`(?:import {)(?:.*)(?:} from ')(?:${path})(?:')`)
 
     let currentDoc = document.getValue()
     const foundImport = currentDoc.match(exp)
@@ -109,43 +99,42 @@ export class ImportFixer {
           ? /{|}|from|import|'|"| |;/gi
           : /{|}|from|import|'|"| |/gi
 
-      workingString = workingString
-        .replace(replaceTarget, '')
-        .replace(relativePath, '')
+      workingString = workingString.replace(replaceTarget, '').replace(path, '')
 
-      const importArray = workingString.split(',')
+      const imports = [...workingString.split(','), imp.name]
 
-      importArray.push(name)
-
-      const newImport = this.createImportStatement(
-        importArray.join(', '),
-        relativePath
-      )
-
+      const newImport = this.createImportStatement({
+        name: imports.join(', '),
+        path
+      })
       currentDoc = currentDoc.replace(exp, newImport)
     }
 
     return currentDoc
   }
 
+  /**
+   * Adds a new import statement to the document
+   */
   private createImportStatement(
-    imp: string,
-    path: string,
+    imp: ImportObject | { name: string; path: string },
     endline: boolean = false
   ): string {
+    const path = 'path' in imp ? imp.path : imp.file.aliases[0] || imp.file.path
+
     const formattedPath = path.replace(/\"/g, '').replace(/\'/g, '')
     let returnStr = ''
 
     const newLine = endline ? '\r\n' : ''
 
     if (this.doubleQuotes && this.spacesBetweenBraces) {
-      returnStr = `import { ${imp} } from "${formattedPath}";${newLine}`
+      returnStr = `import { ${imp.name} } from "${formattedPath}";${newLine}`
     } else if (this.doubleQuotes) {
-      returnStr = `import {${imp}} from "${formattedPath}";${newLine}`
+      returnStr = `import {${imp.name}} from "${formattedPath}";${newLine}`
     } else if (this.spacesBetweenBraces) {
-      returnStr = `import { ${imp} } from '${formattedPath}';${newLine}`
+      returnStr = `import { ${imp.name} } from '${formattedPath}';${newLine}`
     } else {
-      returnStr = `import {${imp}} from '${formattedPath}';${newLine}`
+      returnStr = `import {${imp.name}} from '${formattedPath}';${newLine}`
     }
 
     if (this.useSemiColon === false) {

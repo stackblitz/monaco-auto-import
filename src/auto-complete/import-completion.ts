@@ -65,8 +65,8 @@ class ImportCompletion implements Monaco.languages.CompletionItemProvider {
     }
   }
 
-  private createDescription(imp: ImportObject) {
-    return imp.file.path
+  private createDescription({ file }: ImportObject) {
+    return file.aliases[0] || file.path
   }
 }
 

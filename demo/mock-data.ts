@@ -13,6 +13,10 @@ find
 findBy
 
 defaultExport
+
+HttpClient
+
+ɵHttpInterceptingHandler
 `
 ;(window as any).tokenise = tokenise
 

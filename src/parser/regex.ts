@@ -21,12 +21,13 @@ const regexTokeniser = (file: string) => {
       ...matches.map(([_, imps]) => imps.split(','))
     )
 
-    // Resolve import AS export
+    // Resolve 'import as export'
     const resolvedAliases = flattened.map(raw => {
       const [imp, alias] = raw.split(' as ')
       return alias || imp
     })
 
+    // Remove all whitespaces + newlines
     const trimmed = resolvedAliases.map(imp => imp.trim().replace(/\n/g, ''))
 
     const imps = trimmed.map(
