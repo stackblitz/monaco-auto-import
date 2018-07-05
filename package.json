@@ -4,8 +4,8 @@
   "main": "lib/index.js",
   "description": "",
   "scripts": {
-    "build": "tsc -p ./tsconfig.build.json",
-    "clean": "",
+    "build": "yarn clean && tsc",
+    "clean": "rm -rf dist; rm -rf lib",
     "start": "parcel serve ./demo/index.html --open",
     "release": "yarn test && yarn clean && yarn build && yarn publish && yarn clean",
     "test": "jest --verbose",
@@ -14,21 +14,16 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/enzyme": "^3.1.9",
-    "@types/jest": "^22.2.3",
-    "enzyme": "^3.3.0",
-    "enzyme-adapter-react-16": "^1.1.1",
-    "jest": "^22.4.3",
+    "@types/jest": "^23.1.4",
+    "jest": "^23.3.0",
     "monaco-editor": "^0.13.1",
     "ts-jest": "^22.4.2",
-    "ts-loader": "^3.5.0",
-    "typescript": "^2.8.1"
+    "typescript": "^2.9.2"
   },
   "browserslist": [
     "last 3 versions"
   ],
   "jest": {
-    "setupTestFrameworkScriptFile": "./scripts/test.js",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -43,17 +38,16 @@
   },
   "files": [
     "es",
-    "lib",
-    "umd"
+    "lib"
   ],
   "keywords": [],
-  "homepage": "https://github.com/samdenty99/monaco-auto-import",
+  "homepage": "https://github.com/stackblitz/monaco-auto-import",
   "repository": {
     "type": "git",
-    "url": "https://github.com/samdenty99/monaco-auto-import.git"
+    "url": "https://github.com/stackblitz/monaco-auto-import.git"
   },
   "bugs": {
-    "url": "https://github.com/samdenty99/monaco-auto-import/issues"
+    "url": "https://github.com/stackblitz/monaco-auto-import/issues"
   },
   "author": "Sam Denty <samddenty@gmail.com> (http://github.com/samdenty99)",
   "license": "MIT"

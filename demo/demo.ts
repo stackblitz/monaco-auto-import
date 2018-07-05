@@ -1,7 +1,6 @@
 import * as Monaco from 'monaco-editor'
 
-import AutoImport from '../src'
-import { files, source } from './mock-data'
+import AutoImport, { regexTokeniser } from '../src'
 
 const global = window as Window & {
   require: any
@@ -19,15 +18,29 @@ $require(['vs/editor/editor.main'], () => {
   const { monaco } = global
 
   const editor = monaco.editor.create(document.getElementById('demo'), {
-    value: source,
+    value: `
+    PAD
+    leftPad
+    rightPad
+  `,
     language: 'typescript'
   })
 
   const completor = new AutoImport({ monaco, editor })
 
-  completor.imports.saveFiles(files)
+  completor.imports.saveFiles([
+    {
+      path: './node_modules/left-pad/index.js',
+      aliases: ['left-pad'],
+      imports: regexTokeniser(`
+        export const PAD = ''
+        export function leftPad() {}
+        export function rightPad() {}
+      `)
+    }
+  ])
 
-  completor.imports.addImport('./src/test.ts', 'ASD')
+  // completor.imports.addImport('./src/test.ts', 'ASD')
   ;(window as any).monaco = monaco
   ;(window as any).editor = editor
   ;(window as any).completor = completor

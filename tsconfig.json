@@ -8,8 +8,9 @@
     "jsx": "react",
     "declaration": true,
     "moduleResolution": "node",
-    "rootDir": ".",
+    "rootDir": "src",
     "forceConsistentCasingInFileNames": true,
     "types": ["jest"]
-  }
+  },
+  "include": ["./src/**/*"]
 }

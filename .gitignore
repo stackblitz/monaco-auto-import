@@ -1,6 +1,4 @@
-/coverage
-/demo/dist
-/misc
+/lib
 /dist
 /node_modules
 /.cache
