@@ -11,6 +11,8 @@ app
 find
 
 findBy
+
+defaultExport
 `
 ;(window as any).tokenise = tokenise
 
@@ -18,7 +20,11 @@ export const files: File[] = [
   {
     path: './src/test.ts',
     aliases: ['app/test'],
-    imports: tokenise(`export class Test {}`)
+    imports: tokenise(`
+      export class Test {}
+
+      export default defaultExport
+    `)
   },
   {
     path: './src/app.ts',
