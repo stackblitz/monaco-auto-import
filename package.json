@@ -1,12 +1,13 @@
 {
   "name": "monaco-auto-import",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "description": "",
   "scripts": {
-    "build": "yarn clean && tsc",
-    "clean": "rm -rf dist; rm -rf lib",
+    "build": "rm -rf lib; tsc",
     "start": "parcel serve ./demo/index.html --open",
+    "build:demo": "rm -rf dist; parcel build ./demo/index.html",
     "release": "yarn test && yarn clean && yarn build && yarn publish && yarn clean",
     "test": "jest --verbose",
     "test:coverage": "jest --coverage",
@@ -37,7 +38,7 @@
     ]
   },
   "files": [
-    "es",
+    "dist",
     "lib"
   ],
   "keywords": [],
