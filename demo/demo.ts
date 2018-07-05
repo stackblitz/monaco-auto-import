@@ -1,6 +1,6 @@
 import * as Monaco from 'monaco-editor'
 
-import AutoImport from '../src/auto-import'
+import AutoImport from '../src'
 import { files, source } from './mock-data'
 
 const global = window as Window & {

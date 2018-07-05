@@ -23,22 +23,22 @@ export class ImportFixer {
   public getTextEdits(document: Monaco.editor.ITextModel, imp: ImportObject) {
     const edits = new Array<Monaco.editor.IIdentifiedSingleEditOperation>()
 
-    const importObj: Monaco.Uri | any = imp.file.path
-    const importName: string = imp.name
+    const { path } = imp.file
+    const { name } = imp
 
-    let relativePath = this.normaliseRelativePath(
-      importObj,
-      this.getRelativePath(document, importObj)
+    const relativePath = this.normaliseRelativePath(
+      path,
+      this.getRelativePath(document, path)
     )
 
-    if (this.alreadyResolved(document, relativePath, importName)) {
+    if (this.alreadyResolved(document, relativePath, name)) {
       return edits
     }
 
     // if (this.shouldMergeImport(document, relativePath)) {
     //   edits.push({
     //     range: new Monaco.Range(0, 0, document.getLineCount(), 0),
-    //     text: this.mergeImports(document, importName, importObj, relativePath)
+    //     text: this.mergeImports(document, name, path, relativePath)
     //   })
     // } else {
     edits.push({
@@ -104,7 +104,7 @@ export class ImportFixer {
     if (foundImport) {
       let [workingString] = foundImport
 
-      let replaceTarget =
+      const replaceTarget =
         this.useSemiColon === true
           ? /{|}|from|import|'|"| |;/gi
           : /{|}|from|import|'|"| |/gi
@@ -133,25 +133,19 @@ export class ImportFixer {
     path: string,
     endline: boolean = false
   ): string {
-    let formattedPath = path.replace(/\"/g, '').replace(/\'/g, '')
+    const formattedPath = path.replace(/\"/g, '').replace(/\'/g, '')
     let returnStr = ''
 
+    const newLine = endline ? '\r\n' : ''
+
     if (this.doubleQuotes && this.spacesBetweenBraces) {
-      returnStr = `import { ${imp} } from "${formattedPath}";${
-        endline ? '\r\n' : ''
-      }`
+      returnStr = `import { ${imp} } from "${formattedPath}";${newLine}`
     } else if (this.doubleQuotes) {
-      returnStr = `import {${imp}} from "${formattedPath}";${
-        endline ? '\r\n' : ''
-      }`
+      returnStr = `import {${imp}} from "${formattedPath}";${newLine}`
     } else if (this.spacesBetweenBraces) {
-      returnStr = `import { ${imp} } from '${formattedPath}';${
-        endline ? '\r\n' : ''
-      }`
+      returnStr = `import { ${imp} } from '${formattedPath}';${newLine}`
     } else {
-      returnStr = `import {${imp}} from '${formattedPath}';${
-        endline ? '\r\n' : ''
-      }`
+      returnStr = `import {${imp}} from '${formattedPath}';${newLine}`
     }
 
     if (this.useSemiColon === false) {
@@ -169,12 +163,8 @@ export class ImportFixer {
   }
 
   private normaliseRelativePath(importObj, relativePath: string): string {
-    const removeFileExtenion = rp => {
-      if (rp) {
-        rp = rp.substring(0, rp.lastIndexOf('.'))
-      }
-      return rp
-    }
+    const removeFileExtenion = rp =>
+      rp ? rp.substring(0, rp.lastIndexOf('.')) : rp
 
     const makeRelativePath = rp => {
       let preAppend = './'

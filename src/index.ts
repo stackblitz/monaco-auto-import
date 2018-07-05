@@ -1,3 +1,3 @@
-export { ImportObject, File } from './import-db'
+export { ImportObject, File } from './auto-complete/import-db'
 
-export { default } from './auto-import'
+export { default } from './auto-complete'

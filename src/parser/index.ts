@@ -1,0 +1,10 @@
+export type Expression =
+  | 'default'
+  | 'function'
+  | 'class'
+  | 'interface'
+  | 'let'
+  | 'var'
+  | 'const'
+  | 'enum'
+  | 'type'

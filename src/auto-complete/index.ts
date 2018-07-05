@@ -21,6 +21,9 @@ class AutoImport {
     this.attachCommands()
   }
 
+  /**
+   * Register the commands to monaco & enable auto-importation
+   */
   public attachCommands() {
     const completor = new ImportCompletion(this.editor, this.imports)
 

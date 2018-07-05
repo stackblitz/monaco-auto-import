@@ -1,8 +1,14 @@
+import { Expression } from '../parser'
+
 type Name = string
 type Path = string
 
-export interface ImportObject {
-  name: string
+export interface Import {
+  name: Name
+  type: Expression
+}
+
+export interface ImportObject extends Import {
   file: File
 }
 
@@ -10,7 +16,15 @@ export interface File {
   path: Path
   aliases?: Path[]
 
-  imports?: Name[]
+  imports?: Import[]
+}
+
+type ImportMatcher = (imp: Import) => boolean
+const isAnImport = (name: string | ImportMatcher, file: File) => {
+  const matcher =
+    typeof name === 'function' ? name : i => i.name.indexOf(name) > -1
+
+  return file.imports.findIndex(matcher) > -1
 }
 
 class ImportDb {
@@ -32,17 +46,24 @@ class ImportDb {
 
   /**
    * Fetches an import from the store
+   * @argument name The import name to get
+   * @argument fileMatcher (optional) function to filter the files
    */
   public getImports(
-    name: Name,
-    matcher: (file: File) => boolean = f => f.imports.indexOf(name) > -1
+    name: Name | ImportMatcher,
+    fileMatcher: (file: File) => boolean = f => isAnImport(name, f)
   ): ImportObject[] {
-    const files = this.files.filter(matcher)
+    const files = this.files.filter(fileMatcher)
 
-    return files.map(file => ({
-      name,
+    const importMatcher: ImportMatcher =
+      typeof name === 'function' ? name : i => i.name === name
+
+    const imports = files.map(file => ({
+      ...file.imports.find(importMatcher),
       file
     }))
+
+    return imports
   }
 
   /**
@@ -89,13 +110,18 @@ class ImportDb {
    * Adds an import to a file
    * @param path The path / alias of the file to update
    * @param name The import name to add
+   * @param type The import type
    */
-  public addImport(path: Path, name: Name) {
+  public addImport(path: Path, name: Name, type: Expression = 'var') {
     const file = this.getFile(path)
 
     if (file) {
-      const exists = file.imports.indexOf(name) > -1
-      if (!exists) file.imports.push(name)
+      const exists = isAnImport(name, file)
+      if (!exists)
+        file.imports.push({
+          name,
+          type
+        })
     }
 
     return !!file
@@ -110,7 +136,7 @@ class ImportDb {
     const file = this.getFile(path)
 
     if (file) {
-      const index = file.imports.findIndex(i => i === name)
+      const index = file.imports.findIndex(i => i.name === name)
       if (index !== -1) file.imports.splice(index, 1)
     }
 
