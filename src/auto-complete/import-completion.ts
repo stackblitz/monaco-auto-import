@@ -1,8 +1,8 @@
 import * as Monaco from 'monaco-editor'
 
-import { monaco } from '.'
 import ImportDb, { File, Import, ImportObject } from './import-db'
 import { ImportFixer } from './import-fixer'
+import kindResolver from './util/kind-resolution'
 
 const IMPORT_COMMAND = 'resolveImport'
 
@@ -55,9 +55,13 @@ class ImportCompletion implements Monaco.languages.CompletionItemProvider {
 
     return {
       label: imp.name,
-      kind: monaco.languages.CompletionItemKind.Reference,
+      kind: kindResolver(imp),
       detail: `[AI] import ${imp.name} (Auto-Import)`,
-      documentation: `[AI]  Import ${imp.name} from ${path}`,
+      documentation: {
+        value: `[AI]  Import ${imp.name} from ${path}\n\n\`${imp.type} ${
+          imp.name
+        }\``
+      },
       command: {
         title: 'AI: Autocomplete',
         id: IMPORT_COMMAND,
