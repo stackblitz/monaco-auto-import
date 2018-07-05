@@ -26,6 +26,8 @@ $require(['vs/editor/editor.main'], () => {
   const completor = new AutoImport({ monaco, editor })
 
   completor.imports.saveFiles(files)
+
+  completor.imports.addImport('./src/test.ts', 'ASD')
   ;(window as any).monaco = monaco
   ;(window as any).editor = editor
 })

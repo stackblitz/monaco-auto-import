@@ -47,7 +47,7 @@ class ImportDb {
   /**
    * Fetches an import from the store
    * @argument name The import name to get
-   * @argument fileMatcher (optional) function to filter the files
+   * @argument fileMatcher (optional) custom function to filter the files
    */
   public getImports(
     name: Name | ImportMatcher,

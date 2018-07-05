@@ -56,12 +56,7 @@ class ImportCompletion implements Monaco.languages.CompletionItemProvider {
     return {
       label: imp.name,
       kind: kindResolver(imp),
-      detail: `[AI] import ${imp.name} (Auto-Import)`,
-      documentation: {
-        value: `[AI]  Import ${imp.name} from ${path}\n\n\`${imp.type} ${
-          imp.name
-        }\``
-      },
+      detail: `Auto import from '${path}'\n${imp.type} ${imp.name}`,
       command: {
         title: 'AI: Autocomplete',
         id: IMPORT_COMMAND,
