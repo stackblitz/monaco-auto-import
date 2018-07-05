@@ -20,7 +20,7 @@ $require(['vs/editor/editor.main'], () => {
 
   const editor = monaco.editor.create(document.getElementById('demo'), {
     value: source,
-    language: 'javascript'
+    language: 'typescript'
   })
 
   const completor = new AutoImport({ monaco, editor })
