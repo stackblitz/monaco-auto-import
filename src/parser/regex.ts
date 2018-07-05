@@ -27,7 +27,7 @@ const regexTokeniser = (file: string) => {
       return alias || imp
     })
 
-    const trimmed = resolvedAliases.map(imp => imp.trim())
+    const trimmed = resolvedAliases.map(imp => imp.trim().replace(/\n/g, ''))
 
     const imps = trimmed.map(
       (name): Import => ({
