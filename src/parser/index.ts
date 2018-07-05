@@ -9,3 +9,4 @@ export type Expression =
   | 'const enum'
   | 'enum'
   | 'type'
+  | 'any' // Unresolved type
