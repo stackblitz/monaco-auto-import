@@ -51,7 +51,7 @@ export class ImportAction implements Monaco.languages.CodeActionProvider {
         .replace(/{|}|from|import|'|"| |\.|;/gi, '')
 
       const found = this.importDb.getImports(imp)
-      if (found) {
+      if (found.length) {
         context.imports = found
         return true
       }

@@ -123,7 +123,7 @@ class ImportDb {
    * @param name The import name to add
    * @param type The import type
    */
-  public addImport(path: Path, name: Name, type: Expression = 'var') {
+  public addImport(path: Path, name: Name, type: Expression = 'any') {
     const file = this.getFile(path)
 
     if (file) {
