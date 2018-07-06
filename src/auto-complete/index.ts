@@ -1,5 +1,6 @@
 import * as Monaco from 'monaco-editor'
 
+import { ImportAction } from './import-action'
 import ImportCompletion from './import-completion'
 import ImportDb from './import-db'
 
@@ -26,9 +27,12 @@ class AutoImport {
    */
   public attachCommands() {
     const completor = new ImportCompletion(this.editor, this.imports)
-
     monaco.languages.registerCompletionItemProvider('javascript', completor)
     monaco.languages.registerCompletionItemProvider('typescript', completor)
+
+    const actions = new ImportAction(this.editor, this.imports)
+    monaco.languages.registerCodeActionProvider('javascript', actions)
+    monaco.languages.registerCodeActionProvider('typescript', actions)
   }
 }
 

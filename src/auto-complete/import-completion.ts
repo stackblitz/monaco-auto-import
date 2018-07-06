@@ -4,7 +4,7 @@ import ImportDb, { ImportObject } from './import-db'
 import { ImportFixer } from './import-fixer'
 import kindResolver from './util/kind-resolution'
 
-const IMPORT_COMMAND = 'resolveImport'
+export const IMPORT_COMMAND = 'resolveImport'
 
 class ImportCompletion implements Monaco.languages.CompletionItemProvider {
   constructor(
