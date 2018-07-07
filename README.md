@@ -112,14 +112,14 @@ Bulk-saves files to the internal store from an Array of files
 
 Fetches a file from the internal store by it's path name (or one of it's aliases).
 
-### `getImports(name: string): ImportObject[]`
+### `imports.getImports(name: string): ImportObject[]`
 
 Returns all the imports that exactly match a given string.
 
-### `addImport(path: string, name: string, type?: Expression): boolean`
+### `imports.addImport(path: string, name: string, type?: Expression): boolean`
 
 Adds an import to a given file, with an optional `type` paramater. Returns true if the file existed
 
-### `removeImport(path: string, name: string): boolean`
+### `imports.removeImport(path: string, name: string): boolean`
 
 Removes an import from a given file. Returns true if the file existed
