@@ -1,9 +1,9 @@
 {
-  "name": "monaco-auto-import",
-  "version": "1.0.4",
+  "name": "@blitz/monaco-auto-import",
+  "version": "1.0.6",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "description": "",
+  "description": "Easily add auto-import to the Monaco editor, with Javascript & Typescript support.",
   "scripts": {
     "build": "rm -rf lib; tsc",
     "start": "parcel serve ./demo/index.html --open",
